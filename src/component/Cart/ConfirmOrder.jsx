@@ -206,7 +206,7 @@ const ConfirmOrder = () => {
     const {
       data: { order },
     } = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/payment/checkout`,
+      `${process.env.REACT_APP_BACKEND_URL}/payment/checkout` ,
       { amount, shippingInfo, cartItems, user }
     );
 
