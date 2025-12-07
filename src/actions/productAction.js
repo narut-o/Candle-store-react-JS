@@ -30,7 +30,7 @@ export const getProductDetails =(id)=>async(dispatch)=>{
             type:PRODUCT_DETAILS_REQUEST
         });
         const {data} = await api.getProductDetails(id);
-        console.log(data);
+       
         dispatch({
             type:PRODUCT_DETAILS_SUCCESS,
             payload:data.product

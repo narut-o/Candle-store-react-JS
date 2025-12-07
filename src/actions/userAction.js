@@ -41,7 +41,7 @@ export const register = (userData)=>async(dispatch)=>{
             type:REGISTER_REQUEST
         });
         const {data} = await api.signup(userData);
-        console.log(data);
+
         dispatch({
             type:REGISTER_SUCCESS,
             payload:data.user

@@ -7,7 +7,7 @@ export const myOrders =()=>async(dispatch)=>{
             type:MY_ORDERS_REQUEST
         });
         const {data}  = await api.getMyOrders();
-        console.log('orders',data.orders);
+     
         dispatch({
             type:MY_ORDERS_SUCCESS,
             payload:data.orders
@@ -25,7 +25,7 @@ export const getOrderDetails = (id)=>async(dispatch)=>{
             type:ORDER_DETAILS_REQUEST
         })
     const {data}  = await api.getOrderDetails(id);
-    console.log(data);
+    
     dispatch({
         type:ORDER_DETAILS_SUCCESS,
         payload:data.order
