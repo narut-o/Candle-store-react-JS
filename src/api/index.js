@@ -23,13 +23,13 @@ export const login = (email,password)=>{
 };
 
 export const signup = (userData)=>{
-  const config = {headers:{'Content-Type':'mulipart/form-data'}};
+  const config = {headers:{'Content-Type':'multipart/form-data'}};
   return API.post('/register',userData,config);
 }
 export const getUser = ()=>API.get('/profile');
 export const logout = ()=>API.get('/logout');
 export const updateProfile = (userData)=>{
-  const config = {headers:{'Content-Type':'mulipart/form-data'}};
+  const config = {headers:{'Content-Type':'multipart/form-data'}};
   return API.put('/me/update',userData,config);
 }
 export const updatePassword = (password) =>API.put('/password/update',password);
