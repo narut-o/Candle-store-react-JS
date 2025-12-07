@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { clearErrors, getAllProducts } from "../../actions/productAction";
 import { useParams } from "react-router-dom";
-import { useAlert } from "react-alert";
 
 import Loader from "../layout/Loader/Loader";
 import ProductCard from "../Home/ProductCard";
@@ -13,13 +12,13 @@ import {
   Box,
   Container,
   Grid,
-  Typography,
   Pagination,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 const Products = () => {
   const dispatch = useDispatch();
-  const alert = useAlert();
   const { keyword } = useParams();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,13 +35,29 @@ const Products = () => {
     filteredProductCount,
   } = useSelector((state) => state.products);
 
+  // Snackbar state instead of react-alert
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "error",
+  });
+
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      setSnackbar({
+        open: true,
+        message: error,
+        severity: "error",
+      });
       dispatch(clearErrors());
     }
     dispatch(getAllProducts(keyword, currentPage, price, category, ratings));
-  }, [dispatch, keyword, currentPage, alert, error, price, category, ratings]);
+  }, [dispatch, keyword, currentPage, error, price, category, ratings]);
+
+  const handleSnackbarClose = (_event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -51,9 +66,7 @@ const Products = () => {
 
   const totalItems = filteredProductCount || productsCount || 0;
   const totalPages =
-    resultPerPage && totalItems
-      ? Math.ceil(totalItems / resultPerPage)
-      : 1;
+    resultPerPage && totalItems ? Math.ceil(totalItems / resultPerPage) : 1;
 
   const hasProducts = products && products.length > 0;
 
@@ -80,9 +93,6 @@ const Products = () => {
             </Box>
           ) : (
             <Container maxWidth="lg" sx={{ py: 6 }}>
-              {/* Heading */}
-             
-
               {/* Products grid */}
               <Grid container spacing={4} justifyContent="center">
                 {products.map((product) => (
@@ -127,6 +137,22 @@ const Products = () => {
           )}
         </>
       )}
+
+      {/* Snackbar for errors */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

@@ -138,6 +138,8 @@ import {
   TextField,
   Typography,
   InputAdornment,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import LocationCityIcon from "@mui/icons-material/LocationCity";
@@ -148,14 +150,12 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import { useSelector, useDispatch } from "react-redux";
 import { saveShippingInfo } from "../../actions/cartAction";
 import { State } from "country-state-city";
-import { useAlert } from "react-alert";
 import MetaData from "../layout/MetaData";
 import CheckoutStep from "./CheckoutStep";
 import { useNavigate } from "react-router-dom";
 
 const Shipping = () => {
   const dispatch = useDispatch();
-  const alert = useAlert();
   const navigate = useNavigate();
 
   const { shippingInfo } = useSelector((state) => state.cart);
@@ -166,11 +166,27 @@ const Shipping = () => {
   const [pinCode, setPinCode] = useState(shippingInfo.pinCode || "");
   const [phoneNo, setPhoneNo] = useState(shippingInfo.phoneNo || "");
 
+  // Snackbar state (instead of react-alert)
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "error",
+  });
+
+  const handleSnackbarClose = (_event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   const shippingSubmit = (e) => {
     e.preventDefault();
 
     if (phoneNo.length !== 10) {
-      alert.error("Phone number should be 10 digits");
+      setSnackbar({
+        open: true,
+        message: "Phone number should be 10 digits",
+        severity: "error",
+      });
       return;
     }
 
@@ -358,6 +374,22 @@ const Shipping = () => {
           </Paper>
         </Container>
       </Box>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

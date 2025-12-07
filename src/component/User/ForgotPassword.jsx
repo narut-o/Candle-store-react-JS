@@ -6,10 +6,11 @@ import {
   TextField,
   Button,
   InputAdornment,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { useDispatch, useSelector } from "react-redux";
-import { useAlert } from "react-alert";
 
 import Loader from "../layout/Loader/Loader";
 import MetaData from "../layout/MetaData";
@@ -17,13 +18,19 @@ import { clearErrors, forgotPassword } from "../../actions/userAction";
 
 const ForgotPassword = () => {
   const dispatch = useDispatch();
-  const alert = useAlert();
 
   const { error, message, loading } = useSelector(
     (state) => state.forgotPassword
   );
 
   const [email, setEmail] = useState("");
+
+  // Snackbar state (replaces react-alert)
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
   const forgotPasswordSubmit = (e) => {
     e.preventDefault();
@@ -32,13 +39,26 @@ const ForgotPassword = () => {
 
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      setSnackbar({
+        open: true,
+        message: error,
+        severity: "error",
+      });
       dispatch(clearErrors());
     }
     if (message) {
-      alert.success(message);
+      setSnackbar({
+        open: true,
+        message,
+        severity: "success",
+      });
     }
-  }, [alert, dispatch, error, message]);
+  }, [dispatch, error, message]);
+
+  const handleSnackbarClose = (_event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   return (
     <>
@@ -140,6 +160,22 @@ const ForgotPassword = () => {
           </Paper>
         </Box>
       )}
+
+      {/* Snackbar for success & error */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

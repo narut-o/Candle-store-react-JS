@@ -10,12 +10,13 @@ import {
   Grid,
   Fade,
   useTheme,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import MetaData from "../layout/MetaData";
 import { logout } from "../../actions/userAction";
-import { useAlert } from "react-alert";
 
 const Profile = () => {
   const { user } = useSelector((state) => state.user);
@@ -24,12 +25,26 @@ const Profile = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const alert = useAlert();
+
+  const [snackbar, setSnackbar] = React.useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const handleLogout = () => {
     dispatch(logout());
-    alert.success("Logged Out");
+    setSnackbar({
+      open: true,
+      message: "Logged Out",
+      severity: "success",
+    });
     navigate("/");
+  };
+
+  const handleSnackbarClose = (_event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
   return (
@@ -99,11 +114,13 @@ const Profile = () => {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: isDark ? "rgba(248,250,252,0.7)" : "text.secondary",
+                      color: isDark
+                        ? "rgba(248,250,252,0.7)"
+                        : "text.secondary",
                       mb: 1.5,
                     }}
                   >
-                   
+                    {/* You can put a subtitle here if you want */}
                   </Typography>
 
                   <Stack direction="row" spacing={1}>
@@ -230,7 +247,7 @@ const Profile = () => {
               </Fade>
             </Grid>
 
-            {/* RIGHT COLUMN – DETAILS + SETTINGS STYLE */}
+            {/* RIGHT COLUMN – DETAILS + SETTINGS */}
             <Grid item xs={12} md={8}>
               <Fade in timeout={800}>
                 <Stack spacing={3}>
@@ -255,7 +272,10 @@ const Profile = () => {
                       <Box>
                         <Typography
                           variant="caption"
-                          sx={{ textTransform: "uppercase", color: "text.secondary" }}
+                          sx={{
+                            textTransform: "uppercase",
+                            color: "text.secondary",
+                          }}
                         >
                           Full Name
                         </Typography>
@@ -269,7 +289,10 @@ const Profile = () => {
                       <Box>
                         <Typography
                           variant="caption"
-                          sx={{ textTransform: "uppercase", color: "text.secondary" }}
+                          sx={{
+                            textTransform: "uppercase",
+                            color: "text.secondary",
+                          }}
                         >
                           Email
                         </Typography>
@@ -277,14 +300,10 @@ const Profile = () => {
                           {user?.email}
                         </Typography>
                       </Box>
-
-                     
-
-                     
                     </Stack>
                   </Paper>
 
-                  {/* Settings style section (just UI skeleton – you can wire later) */}
+                  {/* Settings style section */}
                   <Paper
                     elevation={0}
                     sx={{
@@ -375,6 +394,22 @@ const Profile = () => {
           </Grid>
         </Box>
       </Box>
+
+      {/* Snackbar for logout message */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={2500}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

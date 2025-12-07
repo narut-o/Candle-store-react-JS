@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { clearErrors, getProductDetails, newReview } from "../../actions/productAction";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,7 +6,6 @@ import { useParams } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import ReviewCard from "./ReviewCard";
 import Loader from "../layout/Loader/Loader";
-import { useAlert } from "react-alert";
 import { addToCart } from "../../actions/cartAction";
 import MetaData from "../layout/MetaData";
 import {
@@ -26,6 +24,8 @@ import {
   Tabs,
   Tab,
   Divider,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
@@ -37,7 +37,6 @@ import ReviewsCarousel from "./ReviewsCarousel";
 
 const ProductDetails = () => {
   const dispatch = useDispatch();
-  const alert = useAlert();
   const { id } = useParams();
 
   const { loading, product, error } = useSelector(
@@ -53,22 +52,46 @@ const ProductDetails = () => {
   const [comment, setComment] = useState("");
   const [tab, setTab] = useState(0);
 
+  // Snackbar state (replaces react-alert)
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      setSnackbar({
+        open: true,
+        message: error,
+        severity: "error",
+      });
       dispatch(clearErrors());
     }
     if (reviewError) {
-      alert.error(reviewError);
+      setSnackbar({
+        open: true,
+        message: reviewError,
+        severity: "error",
+      });
       dispatch(clearErrors());
     }
     if (success) {
-      alert.success("Review submitted");
+      setSnackbar({
+        open: true,
+        message: "Review submitted",
+        severity: "success",
+      });
       dispatch({ type: NEW_REVIEW_RESET });
     }
 
     dispatch(getProductDetails(id));
-  }, [dispatch, id, alert, error, success, reviewError]);
+  }, [dispatch, id, error, reviewError, success]);
+
+  const handleSnackbarClose = (_event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   const increaseQty = () => {
     if (product.stock <= quantity) return;
@@ -81,7 +104,11 @@ const ProductDetails = () => {
 
   const addToCartHandler = () => {
     dispatch(addToCart(id, quantity));
-    alert.success("Item added to cart");
+    setSnackbar({
+      open: true,
+      message: "Item added to cart",
+      severity: "success",
+    });
   };
 
   const submitReviewToggle = () => setOpen((prev) => !prev);
@@ -128,7 +155,6 @@ const ProductDetails = () => {
                   justifyContent: "center",
                   overflow: "hidden",
                   position: "relative",
-                  objectFit:'contain',
                   "& img": {
                     transition: "transform 0.35s ease",
                   },
@@ -138,7 +164,6 @@ const ProductDetails = () => {
                 }}
               >
                 {product && product.images && product.images.length > 0 && (
-                  // if you want carousel, wrap this with <Carousel> and map
                   <Box
                     component="img"
                     src={product.images[0].url}
@@ -184,20 +209,6 @@ const ProductDetails = () => {
               >
                 Rs. {product?.price}
               </Typography>
-
-              {/* Ratings */}
-              <Box sx={{ mb: 2 }}>
-               
-                <Typography
-                  variant="body2"
-                  sx={{ color: "text.secondary", mt: 0.5 }}
-                >
-                  
-                </Typography>
-              </Box>
-
-              {/* Stock info */}
-            
 
               {/* qty + add to cart */}
               <Stack
@@ -413,10 +424,10 @@ const ProductDetails = () => {
             </Grid>
           </Grid>
 
-          {/* REVIEWS SECTION BELOW (simple) */}
+          {/* REVIEWS SECTION BELOW */}
           <Box sx={{ mt: 8 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>
-             
+              {/* Reviews heading if you want */}
             </Typography>
             {product?.reviews && product.reviews[0] ? (
               <Box className="reviews">
@@ -455,6 +466,22 @@ const ProductDetails = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* SNACKBAR */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

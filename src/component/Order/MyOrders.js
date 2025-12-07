@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -10,11 +10,12 @@ import {
   Button,
   IconButton,
   Chip,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useDispatch, useSelector } from "react-redux";
-import { useAlert } from "react-alert";
 import { Link } from "react-router-dom";
 
 import MetaData from "../layout/MetaData";
@@ -31,18 +32,32 @@ const formatDateTime = (value) => {
 
 const MyOrders = () => {
   const dispatch = useDispatch();
-  const alert = useAlert();
 
   const { loading, error, orders } = useSelector((state) => state.myOrders);
-  
+
+  // Snackbar state (replaces react-alert)
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "error",
+  });
 
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      setSnackbar({
+        open: true,
+        message: error,
+        severity: "error",
+      });
       dispatch(clearErrors());
     }
     dispatch(myOrders());
-  }, [dispatch, alert, error]);
+  }, [dispatch, error]);
+
+  const handleSnackbarClose = (_event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   return (
     <>
@@ -52,10 +67,7 @@ const MyOrders = () => {
       ) : (
         <Box sx={{ bgcolor: "#f3f4f6", minHeight: "100vh", py: 4 }}>
           <Container maxWidth="lg">
-            <Typography
-              variant="h5"
-              sx={{ mb: 3, fontWeight: 600 }}
-            >
+            <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
               My Orders
             </Typography>
 
@@ -174,20 +186,27 @@ const MyOrders = () => {
                         </Grid>
 
                         <Grid item xs={12} md={6}>
-                         {status==='Delivered'? <Stack direction="row" spacing={2}>
-                            <Typography
-                              variant="body2"
-                              sx={{ minWidth: 80, color: "text.secondary" }}
-                            >
-                              Delivered to:
-                            </Typography>
-                            <Typography variant="body2">
-                              {shipping.address && `${shipping.address}, `}
-                              {shipping.city}
-                              {shipping.state && `, ${shipping.state}`}
-                              {shipping.pinCode && `, ${shipping.pinCode}`}
-                            </Typography>
-                          </Stack>:""}
+                          {status === "Delivered" ? (
+                            <Stack direction="row" spacing={2}>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  minWidth: 80,
+                                  color: "text.secondary",
+                                }}
+                              >
+                                Delivered to:
+                              </Typography>
+                              <Typography variant="body2">
+                                {shipping.address && `${shipping.address}, `}
+                                {shipping.city}
+                                {shipping.state && `, ${shipping.state}`}
+                                {shipping.pinCode && `, ${shipping.pinCode}`}
+                              </Typography>
+                            </Stack>
+                          ) : (
+                            ""
+                          )}
                         </Grid>
                       </Grid>
                     </Box>
@@ -246,19 +265,23 @@ const MyOrders = () => {
 
                                   <Typography
                                     variant="caption"
-                                    sx={{ display: "block", color: "text.secondary" }}
+                                    sx={{
+                                      display: "block",
+                                      color: "text.secondary",
+                                    }}
                                   >
                                     Quantity: {item.quantity} × ₹ {item.price}
                                   </Typography>
 
                                   <Typography
                                     variant="caption"
-                                    sx={{ display: "block", color: "text.secondary" }}
+                                    sx={{
+                                      display: "block",
+                                      color: "text.secondary",
+                                    }}
                                   >
                                     Subtotal: ₹ {item.quantity * item.price}
                                   </Typography>
-
-                                  {/* You can add color / size if you have them in item */}
                                 </Box>
                               </Stack>
                             </Box>
@@ -272,6 +295,22 @@ const MyOrders = () => {
           </Container>
         </Box>
       )}
+
+      {/* Snackbar for errors */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

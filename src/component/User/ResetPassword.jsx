@@ -7,6 +7,8 @@ import {
   Button,
   InputAdornment,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
@@ -16,7 +18,6 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { clearErrors, resetPassword } from "../../actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAlert } from "react-alert";
 import Loader from "../layout/Loader/Loader";
 import MetaData from "../layout/MetaData";
 
@@ -34,7 +35,13 @@ const ResetPassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const params = useParams();
-  const alert = useAlert();
+
+  // Snackbar state (replaces react-alert)
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
   const resetPasswordSubmit = (e) => {
     e.preventDefault();
@@ -46,14 +53,27 @@ const ResetPassword = () => {
 
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      setSnackbar({
+        open: true,
+        message: error,
+        severity: "error",
+      });
       dispatch(clearErrors());
     }
     if (isAuthenticated) {
-      alert.success("Password updated");
+      setSnackbar({
+        open: true,
+        message: "Password updated",
+        severity: "success",
+      });
       navigate("/account");
     }
-  }, [dispatch, isAuthenticated, error, navigate, alert]);
+  }, [dispatch, isAuthenticated, error, navigate]);
+
+  const handleSnackbarClose = (_event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   if (loading) {
     return (
@@ -206,6 +226,22 @@ const ResetPassword = () => {
           </Box>
         </Paper>
       </Box>
+
+      {/* Snackbar for error / success */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

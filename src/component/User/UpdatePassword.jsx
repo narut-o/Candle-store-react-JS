@@ -7,6 +7,8 @@ import {
   Button,
   InputAdornment,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import LockIcon from "@mui/icons-material/Lock";
@@ -17,7 +19,6 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { clearErrors, updatePassword } from "../../actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useAlert } from "react-alert";
 import { UPDATE_PASSWORD_RESET } from "../../constants/userConstants";
 import Loader from "../layout/Loader/Loader";
 import MetaData from "../layout/MetaData";
@@ -35,7 +36,13 @@ const UpdatePassword = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const alert = useAlert();
+
+  // Snackbar state (replaces react-alert)
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
   const updatePasswordSubmit = (e) => {
     e.preventDefault();
@@ -48,15 +55,28 @@ const UpdatePassword = () => {
 
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      setSnackbar({
+        open: true,
+        message: error,
+        severity: "error",
+      });
       dispatch(clearErrors());
     }
     if (isUpdated) {
-      alert.success("Password updated");
+      setSnackbar({
+        open: true,
+        message: "Password updated",
+        severity: "success",
+      });
       navigate("/account");
       dispatch({ type: UPDATE_PASSWORD_RESET });
     }
-  }, [dispatch, isUpdated, error, navigate, alert]);
+  }, [dispatch, isUpdated, error, navigate]);
+
+  const handleSnackbarClose = (_event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   if (loading) {
     return (
@@ -245,6 +265,22 @@ const UpdatePassword = () => {
           </Box>
         </Paper>
       </Box>
+
+      {/* Snackbar for success / error */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

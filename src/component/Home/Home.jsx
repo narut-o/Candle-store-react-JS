@@ -1,18 +1,16 @@
 // src/components/Home/Home.jsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
-  Button,
   Container,
   Divider,
   Grid,
-  Stack,
   Typography,
-  TextField,
   Paper,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { useAlert } from "react-alert";
 
 import MetaData from "../layout/MetaData";
 import Loader from "../layout/Loader/Loader";
@@ -22,18 +20,31 @@ import { getAllProducts, clearErrors } from "../../actions/productAction";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const alert = useAlert();
-  const { loading, products, error } = useSelector(
-    (state) => state.products
-  );
+  const { loading, products, error } = useSelector((state) => state.products);
+
+  // Snackbar state (replaces react-alert)
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "error",
+  });
 
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      setSnackbar({
+        open: true,
+        message: error,
+        severity: "error",
+      });
       dispatch(clearErrors());
     }
     dispatch(getAllProducts());
-  }, [dispatch, alert, error]);
+  }, [dispatch, error]);
+
+  const handleSnackbarClose = (_event, reason) => {
+    if (reason === "clickaway") return;
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   const featured = Array.isArray(products) ? products.slice(0, 3) : [];
   const moreProducts = Array.isArray(products) ? products.slice(3, 6) : [];
@@ -46,7 +57,7 @@ const Home = () => {
       ) : (
         <Box
           sx={{
-            bgcolor: "#fdfdfdff", // outer blue/grey like reference
+            bgcolor: "#fdfdfdff",
             minHeight: "100vh",
             py: { xs: 3, md: 5 },
           }}
@@ -68,10 +79,7 @@ const Home = () => {
 
               {/* WHY CHOOSE US */}
               <Box sx={{ mt: 8 }}>
-                <Typography
-                  variant="h4"
-                  sx={{ fontWeight: 600, mb: 1 }}
-                >
+                <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
                   Why Choose Us
                 </Typography>
                 <Divider sx={{ mb: 3, maxWidth: 120 }} />
@@ -144,10 +152,7 @@ const Home = () => {
 
               {/* CRAFTING SECTION */}
               <Box sx={{ mt: 8 }}>
-                <Typography
-                  variant="h4"
-                  sx={{ fontWeight: 600, mb: 1 }}
-                >
+                <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
                   Crafting Simplicity,
                   <br />
                   Defining Elegance
@@ -216,10 +221,7 @@ const Home = () => {
 
               {/* EXPLORE OUR PRODUCTS */}
               <Box sx={{ mt: 8 }}>
-                <Typography
-                  variant="h4"
-                  sx={{ fontWeight: 600, mb: 1 }}
-                >
+                <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
                   Explore Our Products
                 </Typography>
                 <Divider sx={{ mb: 4, maxWidth: 170 }} />
@@ -243,16 +245,27 @@ const Home = () => {
                 </Grid>
               </Box>
 
-              {/* NEWSLETTER SECTION */}
-             
-               
-
-              {/* SIMPLE FOOTER */}
               <Divider sx={{ my: 4 }} />
             </Paper>
           </Container>
         </Box>
       )}
+
+      {/* Snackbar for error messages */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
