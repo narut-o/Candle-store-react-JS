@@ -68,7 +68,7 @@ const Footer = () => {
         <Box
           component="img"
           src={logo}
-          alt="Kiran's Studio"
+          alt="Studio Kiran"
           sx={{
             width: { xs: 32, md: 36 },
             height: "auto",
@@ -86,7 +86,7 @@ const Footer = () => {
             textAlign: { xs: "center", md: "right" },
           }}
         >
-          © {year} Kiran&apos;s Studio. All rights reserved.
+          © {year} Studio kiran . All rights reserved.
         </Typography>
       </Stack>
     </Box>

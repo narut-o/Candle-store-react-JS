@@ -50,7 +50,7 @@ const ConfirmOrder = () => {
       key:process.env.REACT_APP_RAZORPAY_KEY_ID,
       amount: order.amount,
       currency: "INR",
-      name: "Kiran Wax Studio",
+      name: "Studio Kiran",
       description: "Order Payment",
       image:
         "https://res.cloudinary.com/dlozyi9yd/image/upload/v1764971605/WhatsApp_Image_2025-11-18_at_18.17.20_yjftfa.jpg",

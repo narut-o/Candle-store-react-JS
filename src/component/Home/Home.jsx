@@ -51,7 +51,7 @@ const Home = () => {
 
   return (
     <>
-      <MetaData title="Kiran's Studio" />
+      <MetaData title="Studio Kiran" />
       {loading ? (
         <Loader />
       ) : (
@@ -171,7 +171,7 @@ const Home = () => {
                       variant="body2"
                       sx={{ color: "text.secondary", mb: 4 }}
                     >
-                      At Kiran&apos;s Studio we believe that simplicity is
+                      At Studio we believe that simplicity is
                       the new luxury. Each candle is carefully designed to
                       bring a calm, refined atmosphere into your home.
                     </Typography>

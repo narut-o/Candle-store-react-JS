@@ -176,7 +176,7 @@ const LoginSignup = ({ onClose }) => {
                 variant="caption"
                 sx={{ color: "text.secondary", letterSpacing: 0.4 }}
               >
-                Kiran&apos;s Studio
+              Studio Kiran
               </Typography>
             </Box>
           </Box>

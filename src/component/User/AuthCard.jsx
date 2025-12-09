@@ -148,7 +148,7 @@ const [showRegisterPassword, setShowRegisterPassword] = useState(false);
             variant="caption"
             sx={{ color: "text.secondary", letterSpacing: 0.4 }}
           >
-            Kiran&apos;s Studio
+            Studio Kiran
           </Typography>
         </Box>
       </Box>

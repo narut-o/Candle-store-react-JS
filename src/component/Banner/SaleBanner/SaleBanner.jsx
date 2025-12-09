@@ -47,7 +47,7 @@ const SaleBanner = () => {
                 variant="h6"
                 sx={{ fontWeight: 600, fontFamily: "sans-serif" }}
               >
-                Kiran&apos;s Studio
+                Studio Kiran
               </Typography>
             </Stack>
 

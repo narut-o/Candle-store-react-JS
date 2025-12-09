@@ -88,14 +88,14 @@ const Header = () => {
             <Box
               component="img"
               src={logo}
-              alt="Kiran's Studio"
+              alt="Studio Kiran"
               sx={{ width: 32, height: 32, borderRadius: "50%", mr: 1 }}
             />
             <Typography
               variant="subtitle1"
               sx={{ fontWeight: 600, letterSpacing: 0.4 }}
             >
-              Kiran&apos;s Studio
+              Studio Kiran
             </Typography>
           </Box>
 
@@ -213,11 +213,11 @@ const Header = () => {
             <Box
               component="img"
               src={logo}
-              alt="Kiran's Studio"
+              alt="Studio Kiran"
               sx={{ width: 30, height: 30, borderRadius: "50%", mr: 1 }}
             />
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-              Kiran&apos;s Studio
+             Studio Kiran
             </Typography>
           </Box>
 
@@ -283,7 +283,7 @@ const Header = () => {
             variant="caption"
             sx={{ color: "text.secondary", mt: "auto" }}
           >
-            © {new Date().getFullYear()} Kiran&apos;s Studio
+            © {new Date().getFullYear()} Studio Kiran
           </Typography>
         </Box>
       </Drawer>
