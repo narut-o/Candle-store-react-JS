@@ -44,6 +44,13 @@ export const getMyOrders = ()=>API.get('/orders/myorders');
 export const getOrderDetails = (id)=>API.get(`/order/${id}`);
 export const createReview = (reviewData)=>API.put('/review',reviewData);
 export const createRazorPayment = (cartItems,shippingInfo,user) =>API.post('/payment/request/razorpay',{cartItems,shippingInfo,user});
+export const getAllOrders = () =>API.get('/admin/orders');
+export const updateOrder = (id,status) => {
+  const config = { headers: { "Content-Type": "multipart/form-data" } ,withCredentials: true, };
+  console.log("front",status);
+  return API.put(`/admin/order/${id}`, {status},config); 
+
+}
 
 
 
